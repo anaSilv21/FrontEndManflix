@@ -13,7 +13,9 @@
           class="info-content flex flex-column align-items-start justify-content-center"
         >
           <img class="fadeClass" :src="banner.logo" alt="Movie Logo" />
-          <div class="fadeClass rating flex flex-row align-items-center justify-content-start">
+          <div
+            class="fadeClass rating flex flex-row align-items-center justify-content-start"
+          >
             <i class="pi pi-star-fill"></i>
             <i class="pi pi-star-fill"></i>
             <i class="pi pi-star-fill"></i>
@@ -21,41 +23,73 @@
             <i class="pi pi-star-fill"></i>
             <span>2016 2 Temporadas</span>
           </div>
-          <p class="fadeClass" v-if="banner.description">{{ banner.description }}</p>
+          <p class="fadeClass" v-if="banner.description">
+            {{ banner.description }}
+          </p>
         </div>
       </div>
       <img class="logoManflix fadeClass" src="logo.png" alt="Logo" />
       <div class="banner-image">
-        <img class="fadeClass" v-show="banner.image" :src="banner.image" alt="Movie Image" />
+        <img
+          class="fadeClass"
+          v-show="banner.image"
+          :src="banner.image"
+          alt="Movie Image"
+        />
       </div>
     </section>
 
-     <section
+    <section
       class="movies w-screen h-auto flex flex-column align-items-start justify-content-center"
     >
-      <div class="movies-category">
-        <section 
-        v-for="index in noSection" 
-        :key="index" 
-        :id="'section' + index">
+      <div class="categories" v-for="(movie, id) in movies" :key="id">
+        <h3 v-if="movie.movies.length >= 8" class="ml-3">{{ movie.category.nome}}</h3>
+        <div v-if="movie.movies.length >= 8 " class="movies-category">
+          <section
+            v-for="index in noSection"
+            :key="index"
+            :id="'section' + index"
+          >
+            <a :href="'#section' + (index - 1 <= 0 ? noSection : index - 1)"
+              >&#8592;</a
+            >
+            <div
+              v-for="subIndex in noItems"
+              :key="subIndex"
+              class="item"
+              @click="
+                () => {
+                  banner.image =
+                    $store.state.BASE_URL +
+                    movies[2].movies[(index - 1) * noItems + (subIndex - 1)]
+                      .banner;
+                  banner.logo =
+                    $store.state.BASE_URL +
+                    movies[2].movies[(index - 1) * noItems + (subIndex - 1)]
+                      .logo;
+                  banner.description =
+                    $store.state.BASE_URL +
+                    movies[2].movies[(index - 1) * noItems + (subIndex - 1)]
+                      .banner;
+                }
+              "
+            >
+              <img
+                v-if="movies[2] !== undefined"
+                :src="
+                  $store.state.BASE_URL +
+                  movies[2].movies[(index - 1) * noItems + (subIndex - 1)].foto
+                "
+              />
+            </div>
 
-          <a :href="'#section' + (index - 1 <= 0? noSection : index - 1)">&#8592;</a>
-          <div v-for="subIndex in noItems" :key="subIndex" class="item" 
-          @click="()=>{
-            banner.image =  $store.state.BASE_URL + movies[2].movies[(((index - 1)* noItems)+(subIndex - 1))].banner;
-            banner.logo =  $store.state.BASE_URL + movies[2].movies[(((index - 1)* noItems)+(subIndex - 1))].logo;
-            banner.description =   $store.state.BASE_URL + movies[2].movies[(((index - 1)* noItems)+(subIndex - 1))].banner;
-            }">
-            <img
-              v-if=" movies[2] !== undefined" 
-              :src="$store.state.BASE_URL + movies[2].movies[(((index - 1)* noItems)+(subIndex - 1))].foto"
-            />
-          </div>
-          
-          <a :href="'#section' + (index + 1 > noSection ? 1 : index + 1)"><div>&#8594;</div></a>
-        </section>
+            <a :href="'#section' + (index + 1 > noSection ? 1 : index + 1)"
+              ><div>&#8594;</div></a
+            >
+          </section>
+        </div>
       </div>
-    </section> 
+    </section>
   </main>
 </template>
 
@@ -79,7 +113,7 @@ export default {
   },
   methods: {
     getCategorias: async function () {
-     await this.$axios
+      await this.$axios
         .get(this.$store.state.BASE_URL + "/categoria")
         .then((resposta) => {
           console.log("categories:", resposta.data);
@@ -90,10 +124,10 @@ export default {
         });
     },
     getMovie: async function () {
-      console.log("dbnigfjn")
+      console.log("dbnigfjn");
       this.categories.map((category) => {
         this.$axios
-          .get('http://localhost:8000' + "/filmes?categoria=" + category.id)
+          .get("http://localhost:8000" + "/filmes?categoria=" + category.id)
           .then((resposta) => {
             console.log(resposta.data);
             this.movies.push({
@@ -122,7 +156,7 @@ $width-banner-image: 55vw;
 main {
   background-color: var(--background-banner);
   color: var(--placeholder-field-color);
-  
+
   .banner {
     background-color: var(--background-banner);
     .logoManflix {
@@ -166,8 +200,7 @@ main {
     }
   }
   .movies {
-
-    img{
+    img {
       height: 100%;
       width: 100%;
     }
@@ -184,51 +217,51 @@ main {
       overflow: hidden;
       scroll-behavior: smooth;
 
-      section{
+      section {
         width: 100%;
         position: relative;
         display: grid;
         grid-template-columns: repeat(4, auto);
         margin: 20px 0;
-        .item{
+        .item {
           padding: 0 2px;
           transition: $duration all;
           cursor: pointer;
-          &:hover{
-            margin: 0 40px ;
+          &:hover {
+            margin: 0 40px;
             transform: scale($itemGrow);
           }
         }
-        a{
+        a {
           position: absolute;
           color: white;
           text-decoration: none;
           font-size: 6rem;
-          background-color:black;
+          background-color: black;
           width: 80px;
           padding: 20px;
           text-align: center;
           z-index: 1;
 
-          &:nth-of-type(1){
+          &:nth-of-type(1) {
             top: 0;
             bottom: 0;
             left: 0;
             background: linear-gradient(
               -90deg,
-              rgba(0,0,0,0) 0%,
-              rgba(0,0,0,1) 100%,
-            )
+              rgba(0, 0, 0, 0) 0%,
+              rgba(0, 0, 0, 1) 100%
+            );
           }
-          &:nth-of-type(2){
+          &:nth-of-type(2) {
             top: 0;
             bottom: 0;
             right: 0;
             background: linear-gradient(
               -90deg,
-              rgba(0,0,0,0) 0%,
-              rgba(0,0,0,1) 100%,
-            )
+              rgba(0, 0, 0, 0) 0%,
+              rgba(0, 0, 0, 1) 100%
+            );
           }
         }
       }
@@ -236,17 +269,16 @@ main {
   }
 }
 
-.fadeClass{
+.fadeClass {
   animation: fadeIn 5s;
 }
 
 @keyframes fadeIn {
-  0%{
+  0% {
     opacity: 0;
   }
-  100%{
+  100% {
     opacity: 1;
   }
-
 }
 </style>
