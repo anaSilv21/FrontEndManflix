@@ -76,6 +76,7 @@ export default {
         .loginWith("local", { data: this.user }) //Login sucesso
         .then((resposta) => {
           console.log("USUÁRIO LOGADO!!");
+          console.log(resposta)
         }) //falha no login
         .catch((resposta) => {
           console.log(resposta);

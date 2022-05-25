@@ -48,9 +48,9 @@
           <section
             v-for="index in noSection"
             :key="index"
-            :id="'section' + index"
+            :id="'section' + id + '-' + index"
           >
-            <a :href="'#section' + (index - 1 <= 0 ? noSection : index - 1)"
+            <a :href="'#section' + id + '-' + (index - 1 <= 0 ? noSection : index - 1)"
               >&#8592;</a
             >
             <div
@@ -61,29 +61,29 @@
                 () => {
                   banner.image =
                     $store.state.BASE_URL +
-                    movies[2].movies[(index - 1) * noItems + (subIndex - 1)]
+                    movies[id].movies[(index - 1) * noItems + (subIndex - 1)]
                       .banner;
                   banner.logo =
                     $store.state.BASE_URL +
-                    movies[2].movies[(index - 1) * noItems + (subIndex - 1)]
+                    movies[id].movies[(index - 1) * noItems + (subIndex - 1)]
                       .logo;
                   banner.description =
                     $store.state.BASE_URL +
-                    movies[2].movies[(index - 1) * noItems + (subIndex - 1)]
+                    movies[id].movies[(index - 1) * noItems + (subIndex - 1)]
                       .banner;
                 }
               "
             >
               <img
-                v-if="movies[2] !== undefined"
+                v-if="movies[id] !== undefined"
                 :src="
                   $store.state.BASE_URL +
-                  movies[2].movies[(index - 1) * noItems + (subIndex - 1)].foto
+                  movies[id].movies[(index - 1) * noItems + (subIndex - 1)].foto
                 "
               />
             </div>
 
-            <a :href="'#section' + (index + 1 > noSection ? 1 : index + 1)"
+            <a :href="'#section' + id + '-' + (index + 1 > noSection ? 1 : index + 1)"
               ><div>&#8594;</div></a
             >
           </section>
@@ -112,6 +112,18 @@ export default {
     };
   },
   methods: {
+    getFavorites: async function() {
+      await this.$axios
+        .get(this.$store.state.BASE_URL + "/favoritos?usuario=1")
+        .then((resposta) => {
+          console.log("favorites:", resposta.data);
+          this.favorites = resposta.data;
+          console.log("USER:", this.$auth)
+        })
+        .catch((error) => {
+          console.log("categories ERRO!:", error);
+        });
+    },
     getCategorias: async function () {
       await this.$axios
         .get(this.$store.state.BASE_URL + "/categoria")
@@ -143,7 +155,7 @@ export default {
     },
   },
   async created() {
-    await Promise.all([this.getCategorias()]);
+    await Promise.all([this.getCategorias(), this.getFavorites()]);
     this.getMovie();
   },
   // middlename: 'auth'
