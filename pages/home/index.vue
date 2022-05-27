@@ -74,6 +74,7 @@
                 }
               "
             >
+            <button class="btnFav" @click="changeFavorite()">👍</button>
               <img
                 v-if="movies[id] !== undefined"
                 :src="
@@ -112,13 +113,17 @@ export default {
     };
   },
   methods: {
+    changeFavorite: async function () {
+
+    },
     getFavorites: async function() {
       await this.$axios
-        .get(this.$store.state.BASE_URL + "/favoritos?usuario=1")
+        .get(this.$store.state.BASE_URL + "/favoritos?usuario=" + this.$auth.state.user.id)//vai buscar os favoritos do usuario que ta logado
         .then((resposta) => {
           console.log("favorites:", resposta.data);
           this.favorites = resposta.data;
           console.log("USER:", this.$auth)
+          console.log("ID:", this.$auth.state.user.id)
         })
         .catch((error) => {
           console.log("categories ERRO!:", error);
@@ -145,8 +150,10 @@ export default {
             this.movies.push({
               category: category,
               movies: resposta.data,
+              
             });
             console.log("this.movies", this.movies);
+            
           })
           .catch((error) => {
             console.log(error);
@@ -242,6 +249,11 @@ main {
           &:hover {
             margin: 0 40px;
             transform: scale($itemGrow);
+          }
+          .btnFav{
+            background-color: rgba(0, 0, 0, 0);
+            color: white;
+            font-weight: bold;
           }
         }
         a {
